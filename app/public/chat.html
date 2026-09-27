@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nova · NovaPay Assistant</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="chat-shell">
+    <header class="chat-header">
+      <span class="brand">NovaPay</span>
+      <h1 style="margin:0;font-size:1.05rem">Nova, your assistant</h1>
+      <span class="who" data-testid="customer-name"></span>
+      <button class="secondary" id="new-chat" data-testid="new-chat">New chat</button>
+      <button class="secondary" id="logout">Log out</button>
+    </header>
+
+    <main class="messages" id="messages" role="log" aria-live="polite" aria-label="Conversation" data-testid="messages"></main>
+
+    <div class="suggestions" id="suggestions" data-testid="suggestions" aria-label="Suggested questions" role="group">
+      <button type="button">What's my balance?</button>
+      <button type="button">Why was my payment blocked?</button>
+      <button type="button">I lost my card</button>
+    </div>
+
+    <form class="composer" id="composer">
+      <div class="input-wrap">
+        <label for="message" class="visually-hidden">Message</label>
+        <textarea id="message" placeholder="Ask Nova about your accounts…" maxlength="600"></textarea>
+        <div class="counter" id="counter" data-testid="char-counter">0/500</div>
+      </div>
+      <button type="submit" id="send" disabled>Send</button>
+    </form>
+  </div>
+  <script type="module" src="/chat.js"></script>
+</body>
+</html>

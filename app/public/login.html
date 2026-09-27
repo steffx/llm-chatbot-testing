@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · NovaPay Assistant</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="login">
+    <div class="card">
+      <p class="brand">NovaPay</p>
+      <h1>Sign in to chat with Nova</h1>
+      <div id="error" class="error" role="alert" data-testid="login-error" hidden></div>
+      <form id="login-form">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit">Sign in</button>
+      </form>
+      <p class="hint">Demo users: <code>alex</code> / <code>Alex123!</code>, <code>maria</code> / <code>Maria123!</code>. Fictional bank for testing practice.</p>
+    </div>
+  </main>
+  <script type="module">
+    const form = document.getElementById('login-form');
+    const error = document.getElementById('error');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      error.hidden = true;
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: form.username.value.trim(), password: form.password.value }),
+      });
+      if (res.ok) return (window.location.href = '/chat');
+      error.textContent = (await res.json()).error;
+      error.hidden = false;
+    });
+  </script>
+</body>
+</html>

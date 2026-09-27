@@ -1,0 +1,26 @@
+{
+  "name": "llm-chatbot-testing",
+  "version": "1.0.0",
+  "description": "Testing an AI banking assistant: Playwright UI tests, red-team suites for personal data leaks and scam assistance, rule checks and LLM-as-judge",
+  "type": "module",
+  "scripts": {
+    "start": "node app/server.js",
+    "test": "playwright test",
+    "test:ui": "playwright test --project=ui",
+    "test:redteam": "playwright test --project=redteam",
+    "test:behavior": "playwright test --project=behavior",
+    "test:judge": "playwright test --project=judge",
+    "test:unguarded": "GUARDRAILS=off playwright test --project=redteam",
+    "report": "playwright show-report"
+  },
+  "keywords": ["llm-testing", "ai-safety", "red-teaming", "playwright", "chatbot", "fintech", "prompt-injection"],
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.1",
+    "@playwright/test": "^1.55.0"
+  }
+}
