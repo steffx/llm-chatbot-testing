@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Optional repository secrets. Without them the assistant runs on its deterministic mock
+  # and the LLM-judge tests are skipped. With a key, every suite runs against the real model.
+  ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+jobs:
+  test:
+    name: Unit, behaviour, red team, judge and UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run all tests with guardrails on
+        run: npx playwright test
+      - name: Red-team summary
+        if: always()
+        run: if [ -f reports/redteam-guarded.md ]; then cat reports/redteam-guarded.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: |
+            playwright-report/
+            test-results/
+            reports/
+          retention-days: 14
+
+  unguarded:
+    name: Red team without guardrails (expected to fail)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Shows what the guardrails prevent. It fails by design, so it never blocks the pipeline.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Measure attack success rate with guardrails off
+        run: GUARDRAILS=off npx playwright test tests/redteam/attack-success-rate.spec.js
+      - name: Red-team summary
+        if: always()
+        run: if [ -f reports/redteam-unguarded.md ]; then cat reports/redteam-unguarded.md >> "$GITHUB_STEP_SUMMARY"; fi
